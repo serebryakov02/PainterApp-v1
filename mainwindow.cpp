@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include <QLabel>
 #include <QSpinBox>
+#include <QColorDialog>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -42,6 +43,30 @@ MainWindow::MainWindow(QWidget *parent)
     QPushButton* eraserButton = new QPushButton(this);
     eraserButton->setIcon(QIcon(":/images/eraser.png"));
 
+    connect(penButton, &QPushButton::clicked, [=](){
+        // Set current tool to pen
+        m_paintCanvas->setTool(PaintCanvas::Pen);
+        statusBar()->showMessage("Current Tool: Pen");
+    });
+
+    connect(rectButton, &QPushButton::clicked, [=](){
+        // Set current tool to rect
+        m_paintCanvas->setTool(PaintCanvas::Rect);
+        statusBar()->showMessage("Current Tool: Rect");
+    });
+
+    connect(ellipseButton, &QPushButton::clicked, [=](){
+        // Set current tool to ellipse
+        m_paintCanvas->setTool(PaintCanvas::Ellipse);
+        statusBar()->showMessage("Current Tool: Ellipse");
+    });
+
+    connect(eraserButton, &QPushButton::clicked, [=](){
+        // Set current tool to eraser
+        m_paintCanvas->setTool(PaintCanvas::Eraser);
+        statusBar()->showMessage("Current Tool: Eraser");
+    });
+
     // Slot connections
     connect(penWidthSpinBox, SIGNAL(valueChanged(int)), this, SLOT(penWidthChanged(int)));
     connect(m_penColorButton, SIGNAL(clicked()), this, SLOT(changePenColor()));
@@ -60,6 +85,12 @@ MainWindow::MainWindow(QWidget *parent)
     ui->toolBar->addWidget(penButton);
     ui->toolBar->addWidget(ellipseButton);
     ui->toolBar->addWidget(eraserButton);
+
+    QString css = QString("background-color : %1").arg(m_paintCanvas->penColor().name());
+    m_penColorButton->setStyleSheet(css);
+
+    css = QString("background-color : %1").arg(m_paintCanvas->fillColor().name());
+    m_fillColorButton->setStyleSheet(css);
 }
 
 MainWindow::~MainWindow()
@@ -69,21 +100,33 @@ MainWindow::~MainWindow()
 
 void MainWindow::penWidthChanged(int width)
 {
-
+    m_paintCanvas->setPenWidth(width);
 }
 
 void MainWindow::changePenColor()
 {
-
+    QColor color = QColorDialog::getColor(m_paintCanvas->penColor());
+    if (color.isValid())
+    {
+        m_paintCanvas->setPenColor(color);
+        QString css = QString("background-color : %1").arg(color.name());
+        m_penColorButton->setStyleSheet(css);
+    }
 }
 
 void MainWindow::changeFillColor()
 {
-
+    QColor color = QColorDialog::getColor(m_paintCanvas->fillColor());
+    if (color.isValid())
+    {
+        m_paintCanvas->setFillColor(color);
+        QString css = QString("background-color : %1").arg(color.name());
+        m_fillColorButton->setStyleSheet(css);
+    }
 }
 
 void MainWindow::changeFillProperty()
 {
-
+    m_paintCanvas->setFill(m_fillCheckBox->isChecked());
 }
 

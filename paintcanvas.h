@@ -35,6 +35,7 @@ private:
     QColor m_penColor;
     QPoint m_lastPoint;
     QRectF m_lastRect;
+    QRectF m_lastEraserRect;
     QImage m_image;
 
     void resizeImage(QImage* image, const QSize& newSize);
